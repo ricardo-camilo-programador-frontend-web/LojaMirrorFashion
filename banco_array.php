@@ -20,9 +20,8 @@
 </head>
 <body>
 	<?php
-		$conexao = mysqli_connect("127.0.0.1","root","","wd43");
-		$dados = mysqli_query($conexao,"SELECT * FROM produtos");
-		$dadosF = mysqli_fetch_all($dados);
+		require_once 'config/database.php';
+		$dadosF = fetchAll("SELECT * FROM produtos");
 	?>
 	
 	<div class="container">
@@ -34,21 +33,21 @@
 ?>
 	
 			<div class="col-md-6">
-				<a	href="produto.php?id=<?= urlencode($p[0]) ?>">
+				<a	href="produto.php?id=<?= urlencode($p['id']) ?>">
 					<figure>
-						<img class="img-fluid" src="img/produtos/foto<?= $p[0]?>-verde.png" alt="Produto na cor verde">		
-						<figcaption><?= $p[1]?>	por	R$	<?= $p[2]?></figcaption>
-						<p><?= $p[3]?></p>
+						<img class="img-fluid" src="img/produtos/foto<?= $p['id'] ?>-verde.png" alt="Produto na cor verde">		
+						<figcaption><?= $p['nome'] ?>	por	R$	<?= $p['preco'] ?></figcaption>
+						<p><?= $p['descricao'] ?></p>
 					</figure>
 				</a>
 
 			</div>
 
 		
-			<!--<h3>ID: <?= $p[0] ?></h3>
-			<p>nome: <?= $p[1] ?></p>
-			<p>preço: <?= $p[2] ?></p>
-			<h3>Desc: <?= $p[3] ?></h3>-->
+			<!--<h3>ID: <?= $p['id'] ?></h3>
+			<p>nome: <?= $p['nome'] ?></p>
+			<p>preço: <?= $p['preco'] ?></p>
+			<h3>Desc: <?= $p['descricao'] ?></h3>-->
 <?php
 		endforeach;
 

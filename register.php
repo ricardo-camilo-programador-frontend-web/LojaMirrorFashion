@@ -2,23 +2,23 @@
 	<?php
 	$cabecalho_title='Login/Cadastro';
 	include("cabecalho_bootstrap.php");
-	include("conexao_bancophp.php");
+	require_once 'config/database.php';
 	?>
 	<head>
 		<link rel="stylesheet" href="css/keyframes.css">
 	</head>
 
-	<div class="container mt-2 col-md-7""><!--janela principal inicio-->
+	<div class="container mt-2 col-md-7""><!--janela principal inicio">
 
 
 		<div class=" text-center " ><!--2-->	
 			<div class="container text-cente" >
 				<?php
 
-				$user_register_name = @$_POST['mirror_name_register'];
-				$user_register_mail = @$_POST['mirror_email_register'];
-				$user_register_password = @$_POST['mirror_password_register'];
-				$user_register_phone = @$_POST['mirror_register_phone'];
+				$user_register_name = trim($_POST['mirror_name_register'] ?? '');
+				$user_register_mail = trim($_POST['mirror_email_register'] ?? '');
+				$user_register_password = $_POST['mirror_password_register'] ?? '';
+				$user_register_phone = trim($_POST['mirror_register_phone'] ?? '');
 
 				if(isset($_POST['btn_register'])):
 					if(empty($user_register_name)||empty($user_register_mail)||empty($user_register_password)){
@@ -28,6 +28,50 @@
 						Por favor preencha todos os campos com * !
 						</p>
 						</div>
+						';
+					}else{
+						// Check if email already exists
+						$existingUser = fetchOne("SELECT user_mail FROM users WHERE user_mail = ?", [$user_register_mail]);
+						
+						if ($existingUser) {
+							echo'
+							<div class="text-center">
+							<p class="border border-danger p-2 text-danger  rounded">
+							Este email já está cadastrado!
+							</p>
+							</div>
+							';
+						} else {
+							// Insert new user using PDO prepared statement
+							$sql_register = "INSERT INTO users(user_name, user_mail, mirror_user_phone, user_password) VALUES (?, ?, ?, md5(?))";
+							$result = execute($sql_register, [$user_register_name, $user_register_mail, $user_register_phone, $user_register_password]);
+
+							if ($result > 0) {
+								echo'
+								<div class="text-center">
+								<p class="border border-success p-2 text-success  rounded">
+								Cadastro efetuado com sucesso !!
+								</p>
+								</div>
+								';
+							} else {
+								echo'
+								<div class="text-center">
+								<p class="border border-danger p-2 text-danger  rounded">
+								Erro ao cadastrar. Tente novamente.
+								</p>
+								</div>
+								';
+							}
+						}
+						unset($_POST); 
+						exit;
+					};
+				endif;
+
+
+				?>	
+			</div>
 						';
 					}else{
 
