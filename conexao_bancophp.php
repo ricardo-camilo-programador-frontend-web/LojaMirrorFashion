@@ -1,35 +1,22 @@
 <?php
+/**
+ * Database Connection - PDO Migration
+ * 
+ * Este arquivo foi migrado de mysqli para PDO
+ * para maior segurança com prepared statements
+ */
 
-	$servername="127.0.0.1";
-	$username="root";
-	$password="";
-	$db_name="wd43";
+require_once __DIR__ . '/config/database.php';
 
+// Get PDO connection
+$conexao = getPDOConnection();
 
+// Fetch all products (for backward compatibility)
+$produtos = fetchAll("SELECT * FROM produtos");
 
+// NEW PRODUCTS - Latest 4
+$new_products = fetchAll("SELECT * FROM produtos ORDER BY data LIMIT 4");
 
-	$conexao = mysqli_connect($servername,$username,$password,$db_name);
-	$dados = mysqli_query($conexao,"SELECT * FROM produtos");
-	
-	$dadosF = mysqli_fetch_all($dados);
-	$produtos = mysqli_fetch_array($dados);
-
-
-/*PAINEL NOVIDADES e Mais VENDIDOS*/
-	/*NOVIDADES*/
-	$dadosN = mysqli_query($conexao,"SELECT * FROM produtos ORDER BY data LIMIT 4");
-	$new_products= mysqli_fetch_all($dadosN);
-
-	/*/NOVIDADES*/
-
-	/*Mais VENDIDOS*/
-	$dadosV = mysqli_query($conexao,"SELECT * FROM produtos ORDER BY vendas DESC LIMIT 4");
-	$top_sellers= mysqli_fetch_all($dadosV);
-
-	/*/Mais VENDIDOS*/
-
-/*/PAINEL NOVIDADES  e Mais VENDIDOS*/
-	if(mysqli_connect_error()):
-		echo "Falha na conexão: ".mysqli_connect_error();
-	endif;
+// TOP SELLERS - Best selling 4
+$top_sellers = fetchAll("SELECT * FROM produtos ORDER BY vendas DESC LIMIT 4");
 ?>
