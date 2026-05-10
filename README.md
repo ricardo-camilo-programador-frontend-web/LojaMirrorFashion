@@ -1,3 +1,4 @@
+[![CI](https://github.com/ricardo-camilo-programador-frontend-web/LojaMirrorFashion/actions/workflows/ci.yml/badge.svg)](https://github.com/ricardo-camilo-programador-frontend-web/LojaMirrorFashion/actions)
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
