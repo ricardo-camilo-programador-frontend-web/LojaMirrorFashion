@@ -1,9 +1,15 @@
 <?php
 
+require_once 'config/database.php';
 
-include("conexao_bancophp.php");
-$dados = mysqli_query($conexao,"SELECT * FROM produtos WHERE id=".$_GET['id']);
-$produtos = mysqli_fetch_array($dados);
+// Get product by ID using PDO with prepared statement (prevents SQL injection)
+$produto_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$produtos = fetchOne("SELECT * FROM produtos WHERE id = ?", [$produto_id]);
+
+if (!$produtos) {
+    header('Location: index.php');
+    exit;
+}
 
 $cabecalho_title='Mirror Fashion';
 $cabecalho_css='<link rel="stylesheet" type="text/css" href="css/produto.css">';

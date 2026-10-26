@@ -2,15 +2,15 @@
 <?php
 $cabecalho_title='Login/Cadastro';
 include("cabecalho_bootstrap.php");
-require_once 'conexao_bancophp.php';
+require_once 'config/database.php';
 //Sessão
 session_start();
 
 //Botão enviar
 if (isset($_POST['btn_login'])):
 	$errors=array();
-	$login = mysqli_escape_string($conexao, $_POST['user_mail']);
-	$senha = mysqli_escape_string($conexao, $_POST['user_password']);
+	$login = trim($_POST['user_mail'] ?? '');
+	$senha = $_POST['user_password'] ?? '';
 
 	if(empty($login) or empty($senha)):
 		$errors[]="
@@ -20,20 +20,23 @@ if (isset($_POST['btn_login'])):
 					</p>
 				</div>";
 	else:
-		$sql = "SELECT user_mail FROM users WHERE user_mail = '$login'";
-		$resultado = mysqli_query($conexao, $sql);
-		$senha= md5($senha);
-		if(mysqli_num_rows($resultado) > 0):
-			$sql = "SELECT * FROM users WHERE user_mail='$login' AND user_password='$senha'";
-			$resultado = mysqli_query($conexao, $sql);
+		// Check if user exists using PDO with prepared statement
+		$sql = "SELECT user_mail FROM users WHERE user_mail = ?";
+		$resultado = fetchOne($sql, [$login]);
+		
+		if($resultado):
+			// Verify password (still using md5 for backward compatibility)
+			$senhaHash = md5($senha);
+			$sql = "SELECT * FROM users WHERE user_mail = ? AND user_password = ?";
+			$dados = fetchOne($sql, [$login, $senhaHash]);
 
-			if (mysqli_num_rows($resultado) == 1):
-				$dados = mysqli_fetch_array($resultado);
+			if ($dados):
 				$_SESSION['logado'] = true;
 				$_SESSION['user_code']=$dados['user_code'];
 				$_SESSION['user_name'] = $dados['user_name'];
 				$_SESSION['user_mail'] = $dados['user_mail'];
 				header('Location: user_connected.php');
+				exit;
 			else:
 				$errors[]="
 				<div class='text-center mt-2'>

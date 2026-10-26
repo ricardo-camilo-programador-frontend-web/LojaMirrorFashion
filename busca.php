@@ -20,7 +20,7 @@
 <body>
 	
 	<?php
-		include('conexao_bancophp.php');
+		require_once 'config/database.php';
 	?>
 
 <header class="container">
@@ -75,9 +75,10 @@
 	<div class='container  row mt-2'>
 	<?php
 		$arr = array( "a"=>"azul", "b"=>"verde", "c"=>"rosa");
-		$pesquisa=$_GET['txtbusca'];
-		$busca=mysqli_query($conexao,"SELECT * FROM produtos WHERE nome LIKE '%".$pesquisa."%'");
-		$buscaD=mysqli_fetch_all($busca);
+		$pesquisa = trim($_GET['txtbusca'] ?? '');
+		
+		// Use PDO with prepared statement to prevent SQL injection
+		$buscaD = fetchAll("SELECT * FROM produtos WHERE nome LIKE ?", ['%' . $pesquisa . '%']);
 
 		foreach($buscaD as $p):
 
@@ -86,13 +87,13 @@
 		<div class=" col-md-4 ">
 			<div>
 				
-				<a class="nav-link text-dark" href="produto.php?id=<?= $p[0]?>">
+				<a class="nav-link text-dark" href="produto.php?id=<?= $p['id'] ?>">
 					
-					<img class='img-fluid' src='img/produtos/foto<?= $p[0]?>-<?= $arr[array_rand($arr)] ?>.png'>
+					<img class='img-fluid' src='img/produtos/foto<?= $p['id'] ?>-<?= $arr[array_rand($arr)] ?>.png'>
 					<div class="border">
-						<p class="card-header mb-1"><?= $p[1]?></p>
+						<p class="card-header mb-1"><?= $p['nome'] ?></p>
 						<div class="d-flex justify-content-center">
-						<p ><?= $p[2] ?></p>
+						<p ><?= $p['preco'] ?></p>
 						</div>
 					</div>
 					
